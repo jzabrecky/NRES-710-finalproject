@@ -28,15 +28,7 @@ metabolism <- read.table("appling_metabolism.tsv", header = TRUE)
   
   # For the Santa Ynez River
   ynez_metabolism <- metabolism %>% 
-    filter(site_name == "nwis_11128500" | site_name == "nwis_1112600")
-  
-  # Creating a data set with all three rivers
-  mediterranean_metabolism <- metabolism %>% 
-    filter(site_name == "nwis_11462500" | site_name == "nwis_11463000" |
-           site_name == "nwis_11463682" | site_name == "nwis_11463980" |
-           site_name == "nwis_11467000" | site_name == "nwis_11447650" | 
-           site_name == "nwis_11447890" | site_name == "nwis_11128500" | 
-           site_name == "nwis_1112600")
+    filter(site_name == "nwis_11128500" | site_name == "nwis_11126000")
   
 # Removing data that does not make sense (ie. negative GPP or positive ER)
 rus_metabolism <- rus_metabolism %>% 
@@ -45,40 +37,33 @@ sac_metabolism <- sac_metabolism %>%
   filter(GPP >= 0 & ER <= 0)
 ynez_metabolism <- ynez_metabolism %>% 
   filter(GPP >= 0 & ER <= 0)
-mediterranean_metabolism <- mediterranean_metabolism %>% 
-  filter(GPP >= 0 & ER <= 0)
 
 # Dropping rows without any data for ER or GPP
 rus_metabolism <- rus_metabolism %>% 
-  drop_na(c("GPP", "ER"))
+  drop_na()
 sac_metabolism <- sac_metabolism %>% 
-  drop_na(c("GPP", "ER"))
+  drop_na()
 ynez_metabolism <- ynez_metabolism %>% 
-  drop_na(c("GPP", "ER"))
-mediterranean_metabolism <- mediterranean_metabolism %>% 
-  drop_na(c("GPP", "ER"))
+  drop_na()
 
 # Function to convert date column from character to date
 rus_metabolism$date <- date(rus_metabolism$date)
 sac_metabolism$date <- date(sac_metabolism$date)
 ynez_metabolism$date <- date(ynez_metabolism$date)
-mediterranean_metabolism$date <- date(mediterranean_metabolism$date)
 
 # Getting rid of columns I do not care about
 rus_metabolism <- rus_metabolism %>% 
-  select(date, GPP, ER, depth, temp.water, day.length, discharge, shortwave, velocity)
+  select(date, site_name, GPP, ER, depth, temp.water, day.length, discharge, shortwave, velocity)
 sac_metabolism <- sac_metabolism %>% 
-  select(date, GPP, ER, depth, temp.water, day.length, discharge, shortwave, velocity)
+  select(date, site_name, GPP, ER, depth, temp.water, day.length, discharge, shortwave, velocity)
 ynez_metabolism <- ynez_metabolism %>% 
-  select(date, GPP, ER, depth, temp.water, day.length, discharge, shortwave, velocity)
-mediterranean_metabolism <- mediterranean_metabolism %>% 
-  select(date, GPP, ER, depth, temp.water, day.length, discharge, shortwave, velocity)
+  select(date, site_name, GPP, ER, depth, temp.water, day.length, discharge, shortwave, velocity)
 
 # Exporting all created data frames to CSV
 #write.csv(rus_metabolism, "russian_metabolism.csv", row.names = FALSE)
 #write.csv(sac_metabolism, "sacramento_metabolism.csv", row.names = FALSE)
 #write.csv(ynez_metabolism, "santaynez_metabolism.csv", row.names = FALSE)
-#write.csv(mediterranean_metabolism, "mediterranean_metabolism.csv", row.names = FALSE)
+
 
 #### Showing GPP and ER in graphs
 
@@ -144,9 +129,10 @@ rusplot <- ggplot(data = rus_metabolism_avg, aes(x = month_day)) +
   labs(subtitle = "Russian River", y = expression(paste("g C m"^"-2"*" d "^"-1")), x = "Month") +
   scale_x_date(date_labels = "%b", date_breaks = "1 month") +
   theme_bw() +
-  theme(plot.subtitle= element_text(hjust = 0.5)) +
+  theme(plot.subtitle= element_text(hjust = 0.5, size = 14)) +
   annotate("text", x= ymd("2022-07-15"), y = 7, label = expression(paste("GGP = +805.1 g C m"^"-2"*" y "^"-1")), color = "darkgreen") +
   annotate("text", x= ymd("2022-07-15"), y = -7, label = expression(paste("ER = -947.7 g C m"^"-2"*" y "^"-1")), color = "darkred") +
+  annotate("text", x= ymd("2022-03-15"), y = -18, label = expression(paste("NEP = -142.6 g C m"^"-2"*" y "^"-1")), color = "black") +
   coord_cartesian(ylim = c(-18, 13))
 
 rusplot
@@ -161,9 +147,10 @@ sacplot <- ggplot(data = sac_metabolism_avg, aes(x = month_day)) +
   labs(subtitle = "Sacramento River", y = expression(paste("g C m"^"-2"*" d "^"-1")), x = "Month") +
   scale_x_date(date_labels = "%b", date_breaks = "1 month") +
   theme_bw() +
-  theme(plot.subtitle= element_text(hjust = 0.5)) +
+  theme(plot.subtitle= element_text(hjust = 0.5, size = 14)) +
   annotate("text", x= ymd("2022-07-15"), y = 6, label = expression(paste("GGP = +308.0 g C m"^"-2"*" y "^"-1")), color = "darkgreen") +
   annotate("text", x= ymd("2022-07-15"), y = -11, label = expression(paste("ER = -1994.9 g C m"^"-2"*" y "^"-1")), color = "darkred") +
+  annotate("text", x= ymd("2022-03-15"), y = -18, label = expression(paste("NEP = -1627.0 g C m"^"-2"*" y "^"-1")), color = "black") +
   coord_cartesian(ylim = c(-18, 13))
 
 sacplot
@@ -178,9 +165,10 @@ ynezplot <- ggplot(data = ynez_metabolism_avg, aes(x = month_day)) +
   labs(subtitle = "Santa Ynez River", y = expression(paste("g C m"^"-2"*" d "^"-1")), x = "Month") +
   scale_x_date(date_labels = "%b", date_breaks = "1 month") +
   theme_bw() +
-  theme(plot.subtitle= element_text(hjust = 0.5)) +
-  annotate("text", x= ymd("2022-04-15"), y = 12, label = expression(paste("GGP = +1841.5 g C m"^"-2"*" y "^"-1")), color = "darkgreen") +
-  annotate("text", x= ymd("2022-10-15"), y = -2, label = expression(paste("ER = -3773.2 g C m"^"-2"*" y "^"-1")), color = "darkred") +
+  theme(plot.subtitle= element_text(hjust = 0.5, size = 14)) +
+  annotate("text", x= ymd("2022-04-15"), y = 12, label = expression(paste("GGP = +2293.9 g C m"^"-2"*" y "^"-1")), color = "darkgreen") +
+  annotate("text", x= ymd("2022-10-15"), y = -2, label = expression(paste("ER = -3762.4 g C m"^"-2"*" y "^"-1")), color = "darkred") +
+  annotate("text", x= ymd("2022-03-15"), y = -18, label = expression(paste("NEP = -1468.4 g C m"^"-2"*" y "^"-1")), color = "black") +
   coord_cartesian(ylim = c(-18, 13))
 
 ynezplot

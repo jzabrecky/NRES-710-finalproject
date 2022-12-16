@@ -33,42 +33,53 @@ all_rivers$date <- date(all_rivers$date)
 # Velocity
 velocity_plot <- ggplot(data = all_rivers, aes(x = date, y = velocity, color = river)) +
   geom_point(show.legend = FALSE) +
-  scale_x_date(date_labels = "%Y", date_breaks = "1 year") +
+  scale_x_date(date_labels = "%Y", date_breaks = "1 year",
+               limits = as.Date(c("2007-10-01", "2017-01-01"))) +
   labs(y = "Velocity (m / s)", x = NULL) +
   theme_bw()
 
 # Depth
 depth_plot <- ggplot(data = all_rivers, aes(x = date, y = depth, color = river)) +
   geom_point(show.legend = FALSE) +
-  scale_x_date(date_labels = "%Y", date_breaks = "1 year") +
+  scale_x_date(date_labels = "%Y", date_breaks = "1 year",
+               limits = as.Date(c("2007-10-01", "2017-01-01"))) +
   labs(y = "Depth (m)", x = NULL) +
   theme_bw()
 
 # Discharge
 discharge_plot <- ggplot(data = all_rivers, aes(x = date, y = discharge, color = river)) +
-  geom_point(show.legend = FALSE) +
-  scale_x_date(date_labels = "%Y", date_breaks = "1 year") +
-  labs(y = expression(paste("Discharge m"^"3"*" / s")), x = NULL) +
+  geom_point(show.legend = TRUE) +
+  scale_x_date(date_labels = "%Y", date_breaks = "1 year",
+               limits = as.Date(c("2007-10-01", "2017-01-01"))) +
+  labs(color = "River", y = expression(paste("Discharge m"^"3"*" / s")), x = NULL) +
   theme_bw()
+
+# adding legend to free space in this plot
+discharge_plot <- discharge_plot + theme(legend.position = c(0.2, 0.6),
+                       legend.title = element_text(size=10, face="bold"),
+                       legend.background = element_rect(size=0.5, linetype="solid", color = "black"))
 
 # Water Temperature
 temperature_plot <- ggplot(data = all_rivers, aes(x = date, y = temp.water, color = river)) +
-  geom_point() +
-  scale_x_date(date_labels = "%Y", date_breaks = "2 year") +
+  geom_point(show.legend = FALSE) +
+  scale_x_date(date_labels = "%Y", date_breaks = "1 year",
+               limits = as.Date(c("2007-10-01", "2017-01-01"))) +
   labs(y = expression("Temperature ("*~degree*C*")"), x = NULL, color = "River") +
   theme_bw()
 
 # Day Length
 day_plot <- ggplot(data = all_rivers, aes(x = date, y = day.length, color = river)) +
   geom_point(show.legend = FALSE) +
-  scale_x_date(date_labels = "%Y", date_breaks = "1 year") +
+  scale_x_date(date_labels = "%Y", date_breaks = "1 year",
+               limits = as.Date(c("2007-10-01", "2017-01-01"))) +
   labs(y = "Hours of Daylight", x = NULL) +
   theme_bw()
 
 # Solar Radiation
 solar_plot <- ggplot(data = all_rivers, aes(x = date, y = shortwave, color = river)) +
   geom_point(show.legend = FALSE) +
-  scale_x_date(date_labels = "%Y", date_breaks = "1 year") +
+  scale_x_date(date_labels = "%Y", date_breaks = "1 year",
+               limits = as.Date(c("2007-10-01", "2017-01-01"))) +
   labs(y = expression(paste("W / m"^"2")), x = NULL) +
   theme_bw()
 
